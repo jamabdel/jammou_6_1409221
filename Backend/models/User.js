@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true //s'assurera qu'aucun utilisateurs ne peut partager la même adresse e-mail.
     },
     password: {
         type: String,

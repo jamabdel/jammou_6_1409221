@@ -17,28 +17,7 @@ exports.createSauce = (req, res, next) => {
             error
         }));
 };
-/*exports.createThing = (req, res, next) => {
-    const thing = new Thing({
-        title: req.body.title,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        userId: req.body.userId
-    });
-    thing.save().then(
-        () => {
-            res.status(201).json({
-                message: 'Post saved successfully!'
-            });
-        }
-    ).catch(
-        (error) => {
-            res.status(400).json({
-                error: error
-            });
-        }
-    );
-};*/
+
 
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({
@@ -69,42 +48,17 @@ exports.modifySauce = (req, res, next) => {
             _id: req.params.id
         })
         .then(() => res.status(200).json({
-            message: 'Objet modifié !'
+            message: 'Sauce modifié !'
         }))
         .catch(error => res.status(400).json({
             error
         }));
 };
-/*
-exports.modifyThing = (req, res, next) => {
-    const thing = new Thing({
-        _id: req.params.id,
-        title: req.body.title,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        userId: req.body.userId
-    });
-    Thing.updateOne({
-        _id: req.params.id
-    }, thing).then(
-        () => {
-            res.status(201).json({
-                message: 'Thing updated successfully!'
-            });
-        }
-    ).catch(
-        (error) => {
-            res.status(400).json({
-                error: error
-            });
-        }
-    );
-};*/
+
 
 exports.deleteSauce = (req, res, next) => {
-    Sauce.findOne({
-            _id: req.params.id
+    Sauce.findOne({ //nous utilisons  la méthode findOne() dans notre modèle sauce pour 
+            _id: req.params.id //trouver la sauce unique ayant le même _id que le paramètre de la requête ;
         })
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1];
@@ -112,10 +66,10 @@ exports.deleteSauce = (req, res, next) => {
                 Sauce.deleteOne({
                         _id: req.params.id
                     })
-                    .then(() => res.status(200).json({
+                    .then(() => res.status(200).json({ //cette sauce est ensuite retourné dans une Promise et envoyé au front-end ;
                         message: 'Objet supprimé !'
                     }))
-                    .catch(error => res.status(400).json({
+                    .catch(error => res.status(400).json({ //si aucun sauce n'est trouvé ou si une erreur se produit, nous envoyons une erreur 
                         error
                     }));
             });
@@ -127,7 +81,10 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find().then(
-        (sauces) => {
+        (sauces) => { //nous utilisons la méthode find() dans notre modèle Mongoose 
+            //afin de renvoyer un tableau contenant tous les sauces dans notre base de données.
+            // À présent, si vous ajoutez une sauces , 
+            //elle doit s'afficher immédiatement sur votre page sauces.
             res.status(200).json(sauces);
         }
     ).catch(
