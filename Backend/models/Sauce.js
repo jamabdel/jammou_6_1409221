@@ -30,7 +30,12 @@ const sauceSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    /*dislikes: {
+    likes: {
+        type: Number,
+        required: true,
+
+    },
+    dislikes: {
         type: Number,
         required: true
     },
@@ -41,7 +46,7 @@ const sauceSchema = mongoose.Schema({
     usersDisliked: {
         type: [String],
         required: true
-    },*/
+    },
 })
 
 

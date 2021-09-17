@@ -6,12 +6,12 @@ const User = require('../models/User'); //on importe le schéma pour nos utilisa
 exports.signup = (req, res, next) => { //Hash du mot de passe avec bcrypt
     bcrypt.hash(req.body.password, 10) //on hash le password avec un salt de 10, le salt ajout du texte aléatoire au hash.
         .then(hash => {
-            // Création du nouvel utilisateur
-            const user = new User({
+
+            const user = new User({ // Création du nouvel utilisateur
                 email: req.body.email,
                 password: hash
             });
-            // Sauvegarde dans la base de données
+            // Sauvegarde du nouvel utilisateur dans la base de données
             user.save()
                 .then(() => res.status(201).json({
                     message: 'Utilisateur créé !'
@@ -38,10 +38,10 @@ exports.login = (req, res, next) => {
                 });
             }
             // On compare le mot de passe de la requete avec celui de la base de données
-            bcrypt.compare(req.body.password, user.password)
+            bcrypt.compare(req.body.password, user.password) //avec la fonction compare de bcrypt
                 .then(valid => {
-                    if (!valid) {
-                        return res.status(401).json({
+                    if (!valid) { //si les deux mot de passe ne
+                        return res.status(401).json({ // renvoier une erreur 401 Unauthorized
                             error: 'Mot de passe incorrect !'
                         });
                     }

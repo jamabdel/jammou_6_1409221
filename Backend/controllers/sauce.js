@@ -2,6 +2,7 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
 
+
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
@@ -95,3 +96,54 @@ exports.getAllSauces = (req, res, next) => {
         }
     );
 };
+
+exports.likeSauce = (req, res, next) => {
+
+    let like = req.body.like
+    let userId = req.body.userId
+    let sauceId = req.params.id
+
+    console.log(req.body);
+
+    if (like === 1) {
+
+        Sauce.updateOne({
+                _id: sauceId
+            }, {
+                $push: {
+                    usersLiked: userId
+                },
+                $inc: {
+                    likes: +1
+                }
+            })
+
+            .then(() => res.status(200).json({
+                message: 'Sauce liké !'
+            }))
+            .catch(error => res.status(400).json({
+                error
+            }));
+    }
+
+    if (like === -1) {
+
+        Sauce.updateOne({
+                _id: sauceId
+            }, {
+                $push: {
+                    usersDisliked: userId
+                },
+                $inc: {
+                    dislikes: +1
+                }
+            })
+
+            .then(() => res.status(200).json({
+                message: 'Sauce liké !'
+            }))
+            .catch(error => res.status(400).json({
+                error
+            }));
+    }
+}
