@@ -146,4 +146,15 @@ exports.likeSauce = (req, res, next) => {
                 error
             }));
     }
+
+    if (like === 0) {
+        Sauce.findOne({
+                _id: sauceId
+            })
+            .then((sauce) => )
+
+
+    }
+
+
 }
