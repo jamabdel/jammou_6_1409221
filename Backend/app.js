@@ -4,9 +4,10 @@ const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce')
 const path = require('path');
-
+require('dotenv').config();
+const helmet = require("helmet");
 // Connexion à la base de données avec mongoose
-mongoose.connect('mongodb+srv://joachimnodal:hEB55NiL7TNzyn7@cluster0.hcthm.mongodb.net/Cluster0?retryWrites=true&w=majority', {
+mongoose.connect(process.env.SECRET_DB, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
     next();
 });
 // Enregistrement des routeurs
+app.use(helmet());
 app.use(bodyParser.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', sauceRoutes);
