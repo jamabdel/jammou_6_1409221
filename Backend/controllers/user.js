@@ -1,14 +1,22 @@
 const bcrypt = require('bcrypt'); //Bcrypt sert à Hash (et donc sécuriser) les passwords
+
 const jwt = require('jsonwebtoken'); //jsonwebtoken genère un token (pour que nos users ne se connectent qu'une fois)
+
+const maskemail = require("maskemail");
+
 const User = require('../models/User'); //on importe le schéma pour nos utilisateurs.
 
+require('dotenv').config();
 
-exports.signup = (req, res, next) => { //Hash du mot de passe avec bcrypt
-    bcrypt.hash(req.body.password, 10) //on hash le password avec un salt de 10, le salt ajout du texte aléatoire au hash.
+
+exports.signup = (req, res, next) => {
+    bcrypt.hash(req.body.password, 10) //Hash du mot de passe avec bcrypt on hash le password avec un salt de 10, le salt ajout du texte aléatoire au hash.
         .then(hash => {
 
             const user = new User({ // Création du nouvel utilisateur
-                email: req.body.email,
+                email: maskemail(req.body.email, {
+                    allowed: /@\.-/
+                }),
                 password: hash
             });
             // Sauvegarde du nouvel utilisateur dans la base de données
@@ -28,7 +36,7 @@ exports.signup = (req, res, next) => { //Hash du mot de passe avec bcrypt
 exports.login = (req, res, next) => {
     // Recherche d'un utilisateur dans la base de données
     User.findOne({
-            email: req.body.email
+            email: maskemail(req.body.email)
         })
         .then(user => {
             // Si on ne trouve pas l'utilisateur
@@ -52,7 +60,7 @@ exports.login = (req, res, next) => {
                         token: jwt.sign({
                                 userId: user._id
                             },
-                            'RANDOM_TOKEN_SECRET', {
+                            process.env.SECRET_TOKEN, {
                                 expiresIn: '24h'
                             }
                         )
