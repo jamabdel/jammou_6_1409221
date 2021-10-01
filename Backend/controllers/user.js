@@ -1,12 +1,15 @@
-const bcrypt = require('bcrypt'); //Bcrypt sert à Hash (et donc sécuriser) les passwords
+const bcrypt = require('bcrypt'); //Bcrypt sert à Hash (et donc sécuriser) les passwords bcrpyt permet un cryptage sécurisé avec un algorithme unidirectionnel
 
-const jwt = require('jsonwebtoken'); //jsonwebtoken genère un token (pour que nos users ne se connectent qu'une fois)
-
-const maskemail = require("maskemail");
+const jwt = require('jsonwebtoken'); //jsonwebtoken genère un token (pour que nos users ne se connectent qu'une fois) Créer et vérifier les tokens d'authentification
 
 const User = require('../models/User'); //on importe le schéma pour nos utilisateurs.
 
+//const CryptoJS = require("crypto-js");
+
 require('dotenv').config();
+
+//var key = CryptoJS.enc.Hex.parse(process.env.key);
+//var iv = CryptoJS.enc.Hex.parse(process.env.iv);
 
 
 exports.signup = (req, res, next) => {
@@ -14,9 +17,7 @@ exports.signup = (req, res, next) => {
         .then(hash => {
 
             const user = new User({ // Création du nouvel utilisateur
-                email: maskemail(req.body.email, {
-                    allowed: /@\.-/
-                }),
+                email: req.body.email,
                 password: hash
             });
             // Sauvegarde du nouvel utilisateur dans la base de données
@@ -36,7 +37,7 @@ exports.signup = (req, res, next) => {
 exports.login = (req, res, next) => {
     // Recherche d'un utilisateur dans la base de données
     User.findOne({
-            email: maskemail(req.body.email)
+            email: req.body.email,
         })
         .then(user => {
             // Si on ne trouve pas l'utilisateur
@@ -48,18 +49,17 @@ exports.login = (req, res, next) => {
             // On compare le mot de passe de la requete avec celui de la base de données
             bcrypt.compare(req.body.password, user.password) //avec la fonction compare de bcrypt
                 .then(valid => {
-                    if (!valid) { //si les deux mot de passe ne
-                        return res.status(401).json({ // renvoier une erreur 401 Unauthorized
+                    if (!valid) { //Si le mot de pass et le hash correspondent, les informations d'identification sont valides
+                        return res.status(401).json({ // si non renvoier une erreur 401 Unauthorized
                             error: 'Mot de passe incorrect !'
                         });
                     }
 
-                    res.status(200).json({
-                        userId: user._id,
-                        // Création d'un token pour sécuriser le compte de l'utilisateur
-                        token: jwt.sign({
-                                userId: user._id
-                            },
+                    res.status(200).json({ //Envoie d'une réponse 200 contenant l'ID user et un token. 
+                        userId: user._id, // Création d'un token pour sécuriser le compte de l'utilisateur
+                        token: jwt.sign({ //Ce user id encodé sera utilisé pour appliquer le bon user id à chaque objet, afin de ne pas modifier les objets des autres utilisateurs
+                                userId: user._id //le token est créer via le User._id.
+                            }, //Chaîne secrète de développement temporaire pour encoder le token(à remplacer par une chaîne aléatoire beaucoup plus longue pour la production) 
                             process.env.SECRET_TOKEN, {
                                 expiresIn: '24h'
                             }

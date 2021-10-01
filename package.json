@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dotenv": "^10.0.0",
     "mongoose-unique-validator": "^2.0.3",
     "node-sass": "^6.0.1"
   }
